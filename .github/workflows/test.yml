@@ -26,4 +26,4 @@ jobs:
       - uses: ./
         with:
           labels: 'test'
-          type: all_o
+          type: all_of

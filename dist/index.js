@@ -32,6 +32,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
+const LABEL_CHECK_TYPES = ['all_of', 'any_of', 'none_of', 'one_of'];
 function run() {
     var _a, _b;
     try {
@@ -42,7 +43,7 @@ function run() {
             return;
         }
         const pullRequestLabels = (_b = (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.labels) === null || _b === void 0 ? void 0 : _b.map((label) => label.name);
-        core.info(`PR title: ${pullRequestLabels}`);
+        core.info(`PR labels: ${pullRequestLabels}`);
         if (!pullRequestLabels || pullRequestLabels.length === 0) {
             core.setFailed('Pull Request labels not defined');
             return;
@@ -50,30 +51,41 @@ function run() {
         const inputLabels = core
             .getInput('labels', { required: true })
             .split(',');
-        const inputType = core.getInput('type', { required: true });
-        if (inputType === 'all_of') {
-            const shouldPass = inputLabels.every((label) => pullRequestLabels.includes(label));
-            if (!shouldPass) {
-                core.setFailed('PR does not contain all the input labels');
-            }
+        const inputLabelCheckType = core.getInput('type', { required: true });
+        core.info(`Input labels: ${inputLabels}`);
+        core.info(`Input type: ${inputLabelCheckType}`);
+        if (!LABEL_CHECK_TYPES.includes(inputLabelCheckType)) {
+            core.setFailed(`Input type (${inputLabelCheckType}) is not valid`);
+            return;
         }
-        if (inputType === 'any_of') {
+        if (inputLabelCheckType)
+            if (inputLabelCheckType === 'all_of') {
+                const shouldPass = inputLabels.every((label) => pullRequestLabels.includes(label));
+                if (!shouldPass) {
+                    core.setFailed('PR does not contain all the input labels');
+                    return;
+                }
+            }
+        if (inputLabelCheckType === 'any_of') {
             const shouldPass = inputLabels.some((label) => pullRequestLabels.includes(label));
             if (!shouldPass) {
                 core.setFailed('PR does not contain any of the input labels');
+                return;
             }
         }
-        if (inputType === 'one_of') {
+        if (inputLabelCheckType === 'none_of') {
+            const shouldPass = inputLabels.every((label) => !pullRequestLabels.includes(label));
+            if (!shouldPass) {
+                core.setFailed('PR contains at least one input label');
+                return;
+            }
+        }
+        if (inputLabelCheckType === 'one_of') {
             const labelsContained = inputLabels.filter((label) => pullRequestLabels.includes(label)).length;
             const shouldPass = labelsContained === 1;
             if (!shouldPass) {
                 core.setFailed(`PR contains ${labelsContained} labels from the input labels`);
-            }
-        }
-        if (inputType === 'none_of') {
-            const shouldPass = inputLabels.every((label) => !pullRequestLabels.includes(label));
-            if (!shouldPass) {
-                core.setFailed('PR contains at least one input label');
+                return;
             }
         }
         core.info('PR label check successful');

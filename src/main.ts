@@ -29,6 +29,9 @@ function run(): void {
             .split(',');
         const inputLabelCheckType = core.getInput('type', { required: true });
 
+        core.info(`Input labels: ${inputLabels}`);
+        core.info(`Input type: ${inputLabelCheckType}`);
+
         if (!LABEL_CHECK_TYPES.includes(inputLabelCheckType)) {
             core.setFailed(`Input type (${inputLabelCheckType}) is not valid`);
             return;

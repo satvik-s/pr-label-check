@@ -1,11 +1,21 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'PR Label Verify'
+description: 'Check PR for specific label(s)'
+author: 'Satvik Shukla'
 inputs:
-  milliseconds: # change this
+  labels:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'list of labels to check for (comma-separated)'
+  type:
+    required: true
+    description: 'type of label check'
+    options:
+      - all_of
+      - any_of
+      - one_of
+      - none_of
 runs:
   using: 'node16'
   main: 'dist/index.js'
+branding:
+  icon: 'check'
+  color: 'blue'

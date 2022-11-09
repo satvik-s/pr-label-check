@@ -19,11 +19,3 @@ jobs:
           npm install
       - run: |
           npm run all
-  test-label-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./
-        with:
-          labels: help wanted
-          type: all_of

@@ -12,7 +12,7 @@ Please refer to [action definition](action.yml) and the following example workfl
 ### Sample Workflow
 
 ```yml
-name: 'PR Title Check'
+name: 'PR Label Check'
 on:
   pull_request:
     types:
@@ -27,10 +27,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: PR Title Verify
-        uses: satvik-s/pr-title-check@1.0.1 # use latest version
+      - name: PR Label Verify
+        uses: satvik-s/pr-label-check@1.0.0 # use latest version
         with:
-          pattern: '(fix|feat|chore|docs|style|refactor|perf|test): (?:\w+\b\W*){3,8}$'
+          labels: bug,enhancement
+          type: any_of
 ```
 
 ## License
